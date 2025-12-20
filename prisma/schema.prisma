@@ -1,0 +1,48 @@
+datasource db {
+  provider = "mongodb"
+  url      = env("DATABASE_URL")
+}
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+model Season {
+  id     String  @id @default(auto()) @map("_id") @db.ObjectId
+  name   String  @unique
+  year   Int     @unique
+  // Stores the division rules: 
+  // Array of { label: string, min: number, max: number, isYouth: boolean }
+  rules  Json
+  events Event[]
+}
+
+model Event {
+  id       String  @id @default(auto()) @map("_id") @db.ObjectId
+  label    String
+  seasonId String  @db.ObjectId
+  season   Season  @relation(fields: [seasonId], references: [id])
+  scores   Score[]
+
+  @@unique([label, seasonId])
+}
+
+model Participant {
+  id      String  @id @default(auto()) @map("_id") @db.ObjectId
+  agaId   String  @unique
+  name    String
+  rankInt Int
+  isYouth Boolean
+  scores  Score[]
+}
+
+model Score {
+  id          String      @id @default(auto()) @map("_id") @db.ObjectId
+  value       Int
+  agaId       String
+  participant Participant @relation(fields: [agaId], references: [agaId])
+  eventId     String      @db.ObjectId
+  event       Event       @relation(fields: [eventId], references: [id])
+
+  @@unique([agaId, eventId])
+}
