@@ -3,7 +3,7 @@ import remarkGfm from "remark-gfm";
 import { notFound } from "next/navigation";
 import { getFetchUrl } from "@/lib/utils";
 
-const CACHE_INTERVAL = 3600;
+const CACHE_INTERVAL = parseInt(process.env.CACHE_INTERVAL_SECONDS ?? "3600");
 
 type Params = {
   params: Promise<{

@@ -34,6 +34,16 @@ interface LeaderboardProps {
   data: DivisionGroup[];
 }
 
+/**
+ * Calculates the participant total based on their top 5 performing scores
+ */
+const getParticipantTotal = (p: Participant) =>
+  Object.values(p.scores)
+    .filter((score): score is number => score !== undefined)
+    .sort((a, b) => b - a)
+    .slice(0, 5)
+    .reduce((acc, score) => acc + score, 0);
+
 const getTrend = (p: Participant, events: Event[]) => {
   if (events.length < 2) return "neutral";
 
@@ -65,11 +75,6 @@ export default function GoLeaderboard({ events, data }: LeaderboardProps) {
   const toggleDivision = (division: string) => {
     setCollapsed((prev) => ({ ...prev, [division]: !prev[division] }));
   };
-
-  const getParticipantTotal = (p: Participant) =>
-    Object.values(p.scores)
-      .filter((score): score is number => score !== undefined)
-      .reduce((acc, score) => acc + score, 0);
 
   return (
     <div className="w-full max-w-6xl mx-auto">

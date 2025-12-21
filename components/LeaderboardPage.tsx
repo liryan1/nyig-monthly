@@ -6,7 +6,7 @@ import { Suspense } from "react";
 import { LeaderboardSkeleton } from "./LeaderboardSkeleton";
 import { getFetchUrl } from "@/lib/utils";
 
-const CACHE_INTERVAL = 1;
+const CACHE_INTERVAL = parseInt(process.env.CACHE_INTERVAL_SECONDS ?? "3600");
 
 const getUrl = (circuit: string) => {
   const year = new Date().getFullYear();
