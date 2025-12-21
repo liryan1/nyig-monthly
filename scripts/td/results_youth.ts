@@ -41,7 +41,7 @@ export const results_youth = [
     "givenName": "Amari",
     "familyName": "Gonzalez",
     "roundScores": [
-      "skip",
+      "bye",
       "5+",
       "1-",
       "3+"

@@ -9,31 +9,40 @@ generator client {
 
 model Season {
   id     String  @id @default(auto()) @map("_id") @db.ObjectId
-  name   String  @unique
   year   Int     @unique
   // Stores the division rules: 
   // Array of { label: string, min: number, max: number, isYouth: boolean }
   rules  Json
   events Event[]
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
 }
 
 model Event {
   id       String  @id @default(auto()) @map("_id") @db.ObjectId
   label    String
+  results  String?
   seasonId String  @db.ObjectId
   season   Season  @relation(fields: [seasonId], references: [id])
   scores   Score[]
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
 
   @@unique([label, seasonId])
 }
 
 model Participant {
-  id      String  @id @default(auto()) @map("_id") @db.ObjectId
-  agaId   String  @unique
-  name    String
-  rankInt Int
-  isYouth Boolean
-  scores  Score[]
+  id        String   @id @default(auto()) @map("_id") @db.ObjectId
+  agaId     String   @unique
+  name      String
+  rankInt   Int
+  isYouth   Boolean
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  scores Score[]
 }
 
 model Score {
@@ -43,6 +52,9 @@ model Score {
   participant Participant @relation(fields: [agaId], references: [agaId])
   eventId     String      @db.ObjectId
   event       Event       @relation(fields: [eventId], references: [id])
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
 
   @@unique([agaId, eventId])
 }

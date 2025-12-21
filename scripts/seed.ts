@@ -1,53 +1,23 @@
 import { prisma } from "@/lib/prisma";
 
 const existingAgaIds = new Set()
-
-function generateAgaId() {
-  let agaId;
-  do {
-    agaId = Math.floor(10000 + Math.random() * 90000).toString();
-  } while (existingAgaIds.has(agaId));
-  existingAgaIds.add(agaId);
-  return agaId;
-}
-
-// Helper to get random score based on rank
-function getRandomScore(rankInt: number) {
-  // For dan ranks (0 and above), higher numbers = higher rank
-  // For kyu ranks (negative), closer to 0 = higher rank
-  let baseScore;
-  if (rankInt >= 0) {
-    // Dan ranks: 1d=0, 2d=1, 3d=2, etc.
-    baseScore = 40 + (rankInt * 2);
-  } else {
-    // Kyu ranks: -1 = 1k (highest kyu), -30 = 30k (lowest)
-    baseScore = Math.max(5, 40 + rankInt);
-  }
-  const variance = Math.floor(Math.random() * 10) - 5;
-  return Math.max(0, baseScore + variance);
-}
-
-// Helper to randomly skip some events (80% participation rate)
-function shouldParticipate() {
-  return Math.random() < 0.8;
-}
+const year = 2025
 
 async function seed() {
   console.log('🌱 Starting seed...');
 
-  // Clear existing data
-  console.log('Clearing existing data...');
-  await prisma.score.deleteMany();
-  await prisma.event.deleteMany();
-  await prisma.participant.deleteMany();
-  await prisma.season.deleteMany();
+  // DANGER: Clear existing data
+  // console.log('Clearing existing data...');
+  // await prisma.score.deleteMany();
+  // await prisma.event.deleteMany();
+  // await prisma.participant.deleteMany();
+  // await prisma.season.deleteMany();
 
   // Create Season with division rules
   console.log('Creating season...');
   const season = await prisma.season.create({
     data: {
-      name: '2025 Season',
-      year: 2025,
+      year,
       rules: {
         adult: [
           { label: 'Double-digit kyu', min: -30, max: -10, isYouth: false },
@@ -67,7 +37,7 @@ async function seed() {
 
   // Create Events
   console.log('Creating events...');
-  const eventLabels = ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct'];
+  const eventLabels = ['jan', 'mar', 'apr', 'may', 'jun', 'jul', 'sep', 'oct', 'dec'];
   await prisma.event.createMany({
     data: eventLabels.map(label => ({
       label,
@@ -75,129 +45,165 @@ async function seed() {
     }))
   });
 
-  // Fetch created events for score creation
-  const createdEvents = await prisma.event.findMany({
-    where: { seasonId: season.id }
-  });
-
-  // Create Participants
-  console.log('Creating participants...');
-
-  const firstNames = [
-    'Alex', 'Sarah', 'Michael', 'Elena', 'David', 'Lisa', 'James', 'Maya',
-    'Robert', 'Anna', 'Kevin', 'Sophie', 'Daniel', 'Rachel', 'Tom', 'Emma',
-    'Lucas', 'Olivia', 'Noah', 'Ava', 'Ethan', 'Isabella', 'Mason', 'Sophia',
-    'Liam', 'Charlotte', 'Benjamin', 'Amelia', 'Henry', 'Mia', 'Jackson', 'Harper',
-    'Aiden', 'Lily', 'Jack', 'Grace', 'Ryan', 'Chloe', 'Dylan', 'Zoe'
-  ];
-
-  const lastNames = [
-    'Chen', 'Kim', 'Zhang', 'Rodriguez', 'Park', 'Wong', 'Lee', 'Patel',
-    'Schmidt', 'Tran', 'Martin', 'Green', 'Anderson', 'Clark', 'Lewis', 'Wilson',
-    'Brown', 'Taylor', 'Davis', 'Martinez', 'Garcia', 'Lopez', 'Johnson', 'White'
-  ];
-
-  // Helper to get random count between min and max
-  function getRandomCount(min: number, max: number) {
-    return Math.floor(Math.random() * (max - min + 1)) + min;
-  }
-
-  // Generate participants across all divisions
-  const participantsToCreate = [];
-
-  // Adult divisions
-  const adultDivisions = [
-    { min: -30, max: -10 },
-    { min: -9, max: -1 },
-    { min: 0, max: 2 },    // 1d=0, 2d=1, 3d=2
-    { min: 3, max: 8 }     // 4d=3, 5d=4, ... 9d=8
-  ];
-
-  for (const division of adultDivisions) {
-    const ranksInDivision = [];
-    for (let rank = division.min; rank <= division.max; rank++) {
-      ranksInDivision.push(rank);
+  async function generatePlayersAndScores() {
+    function generateAgaId() {
+      let agaId;
+      do {
+        agaId = Math.floor(10000 + Math.random() * 90000).toString();
+      } while (existingAgaIds.has(agaId));
+      existingAgaIds.add(agaId);
+      return agaId;
     }
 
-    const count = getRandomCount(6, 10);
-    for (let i = 0; i < count; i++) {
-      const firstName = firstNames[Math.floor(Math.random() * firstNames.length)];
-      const lastName = lastNames[Math.floor(Math.random() * lastNames.length)];
-      const rankInt = ranksInDivision[i % ranksInDivision.length];
-
-      participantsToCreate.push({
-        name: `${firstName} ${lastName}`,
-        rankInt,
-        agaId: generateAgaId(),
-        isYouth: false
-      });
-    }
-  }
-
-  // Youth divisions
-  const youthDivisions = [
-    { min: -30, max: -18 },
-    { min: -17, max: -10 },
-    { min: -9, max: -1 },
-    { min: 0, max: 8 }     // 1d+ (1d=0, 2d=1, etc.)
-  ];
-
-  for (const division of youthDivisions) {
-    const ranksInDivision = [];
-    for (let rank = division.min; rank <= division.max; rank++) {
-      ranksInDivision.push(rank);
+    // Helper to get random score based on rank
+    function getRandomScore(rankInt: number) {
+      // For dan ranks (0 and above), higher numbers = higher rank
+      // For kyu ranks (negative), closer to 0 = higher rank
+      let baseScore;
+      if (rankInt >= 0) {
+        // Dan ranks: 1d=0, 2d=1, 3d=2, etc.
+        baseScore = 40 + (rankInt * 2);
+      } else {
+        // Kyu ranks: -1 = 1k (highest kyu), -30 = 30k (lowest)
+        baseScore = Math.max(5, 40 + rankInt);
+      }
+      const variance = Math.floor(Math.random() * 10) - 5;
+      return Math.max(0, baseScore + variance);
     }
 
-    const count = getRandomCount(6, 10);
-    for (let i = 0; i < count; i++) {
-      const firstName = firstNames[Math.floor(Math.random() * firstNames.length)];
-      const lastName = lastNames[Math.floor(Math.random() * lastNames.length)];
-      const rankInt = ranksInDivision[i % ranksInDivision.length];
-
-      participantsToCreate.push({
-        name: `${firstName} ${lastName}`,
-        rankInt,
-        agaId: generateAgaId(),
-        isYouth: true,
-      });
+    // Helper to randomly skip some events (80% participation rate)
+    function shouldParticipate() {
+      return Math.random() < 0.8;
     }
-  }
 
-  // Bulk insert participants
-  await prisma.participant.createMany({
-    data: participantsToCreate
-  });
+    // Fetch created events for score creation
+    const createdEvents = await prisma.event.findMany({
+      where: { seasonId: season.id }
+    });
 
-  // Fetch created participants for score creation
-  const participants = await prisma.participant.findMany();
+    // Create Participants
+    console.log('Creating participants...');
 
-  // Create Scores
-  console.log('Creating scores...');
-  const scoresToCreate = [];
+    const firstNames = [
+      'Alex', 'Sarah', 'Michael', 'Elena', 'David', 'Lisa', 'James', 'Maya',
+      'Robert', 'Anna', 'Kevin', 'Sophie', 'Daniel', 'Rachel', 'Tom', 'Emma',
+      'Lucas', 'Olivia', 'Noah', 'Ava', 'Ethan', 'Isabella', 'Mason', 'Sophia',
+      'Liam', 'Charlotte', 'Benjamin', 'Amelia', 'Henry', 'Mia', 'Jackson', 'Harper',
+      'Aiden', 'Lily', 'Jack', 'Grace', 'Ryan', 'Chloe', 'Dylan', 'Zoe'
+    ];
 
-  for (const participant of participants) {
-    for (const event of createdEvents) {
-      // 80% participation rate
-      if (shouldParticipate()) {
-        scoresToCreate.push({
-          value: getRandomScore(participant.rankInt),
-          agaId: participant.agaId,
-          eventId: event.id
+    const lastNames = [
+      'Chen', 'Kim', 'Zhang', 'Rodriguez', 'Park', 'Wong', 'Lee', 'Patel',
+      'Schmidt', 'Tran', 'Martin', 'Green', 'Anderson', 'Clark', 'Lewis', 'Wilson',
+      'Brown', 'Taylor', 'Davis', 'Martinez', 'Garcia', 'Lopez', 'Johnson', 'White'
+    ];
+
+    // Helper to get random count between min and max
+    function getRandomCount(min: number, max: number) {
+      return Math.floor(Math.random() * (max - min + 1)) + min;
+    }
+
+    // Generate participants across all divisions
+    const participantsToCreate = [];
+
+    // Adult divisions
+    const adultDivisions = [
+      { min: -30, max: -10 },
+      { min: -9, max: -1 },
+      { min: 0, max: 2 },    // 1d=0, 2d=1, 3d=2
+      { min: 3, max: 8 }     // 4d=3, 5d=4, ... 9d=8
+    ];
+
+    for (const division of adultDivisions) {
+      const ranksInDivision = [];
+      for (let rank = division.min; rank <= division.max; rank++) {
+        ranksInDivision.push(rank);
+      }
+
+      const count = getRandomCount(6, 10);
+      for (let i = 0; i < count; i++) {
+        const firstName = firstNames[Math.floor(Math.random() * firstNames.length)];
+        const lastName = lastNames[Math.floor(Math.random() * lastNames.length)];
+        const rankInt = ranksInDivision[i % ranksInDivision.length];
+
+        participantsToCreate.push({
+          name: `${firstName} ${lastName}`,
+          rankInt,
+          agaId: generateAgaId(),
+          isYouth: false
         });
       }
     }
+
+    // Youth divisions
+    const youthDivisions = [
+      { min: -30, max: -18 },
+      { min: -17, max: -10 },
+      { min: -9, max: -1 },
+      { min: 0, max: 8 }     // 1d+ (1d=0, 2d=1, etc.)
+    ];
+
+    for (const division of youthDivisions) {
+      const ranksInDivision = [];
+      for (let rank = division.min; rank <= division.max; rank++) {
+        ranksInDivision.push(rank);
+      }
+
+      const count = getRandomCount(6, 10);
+      for (let i = 0; i < count; i++) {
+        const firstName = firstNames[Math.floor(Math.random() * firstNames.length)];
+        const lastName = lastNames[Math.floor(Math.random() * lastNames.length)];
+        const rankInt = ranksInDivision[i % ranksInDivision.length];
+
+        participantsToCreate.push({
+          name: `${firstName} ${lastName}`,
+          rankInt,
+          agaId: generateAgaId(),
+          isYouth: true,
+        });
+      }
+    }
+
+    // Bulk insert participants
+    await prisma.participant.createMany({
+      data: participantsToCreate
+    });
+
+    // Fetch created participants for score creation
+    const participants = await prisma.participant.findMany();
+
+    // Create Scores
+    console.log('Creating scores...');
+    const scoresToCreate = [];
+
+    for (const participant of participants) {
+      for (const event of createdEvents) {
+        // 80% participation rate
+        if (shouldParticipate()) {
+          scoresToCreate.push({
+            value: getRandomScore(participant.rankInt),
+            agaId: participant.agaId,
+            eventId: event.id
+          });
+        }
+      }
+    }
+
+    // Bulk insert scores
+    await prisma.score.createMany({
+      data: scoresToCreate
+    });
+
+    console.log(`   - Created ${participants.length} participants`);
+    console.log(`   - Created ${scoresToCreate.length} scores`);
   }
 
-  // Bulk insert scores
-  await prisma.score.createMany({
-    data: scoresToCreate
-  });
+  // Uncomment to generate players and scores
+  // await generatePlayersAndScores();
 
   console.log('✅ Seed complete!');
   console.log(`   - Created 1 season`);
-  console.log(`   - Created ${createdEvents.length} events`);
-  console.log(`   - Created ${participants.length} participants`);
-  console.log(`   - Created ${scoresToCreate.length} scores`);
+  console.log(`   - Created ${eventLabels.length} events`);
 }
 
 seed()

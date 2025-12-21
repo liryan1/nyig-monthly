@@ -6,10 +6,13 @@ import {
 } from "@/components/ui/table";
 import { Badge } from "@/components/ui/badge";
 import { TrendingUp, TrendingDown, Minus, Trophy, ChevronDown, ChevronRight, Medal, Award } from "lucide-react";
+import { Button } from './ui/button';
+import { useRouter } from 'next/navigation';
 
 type Event = {
   id: string;
   label: string;
+  resultsAvailable?: boolean;
 };
 
 type Participant = {
@@ -53,6 +56,8 @@ const getRankIcon = (rank: number) => {
 
 
 export default function GoLeaderboard({ events, data }: LeaderboardProps) {
+  const year = new Date().getFullYear();
+  const router = useRouter();
   const [collapsed, setCollapsed] = useState<Record<string, boolean>>({});
 
   const toggleDivision = (division: string) => {
@@ -74,8 +79,14 @@ export default function GoLeaderboard({ events, data }: LeaderboardProps) {
               <TableHead className="w-[60px]"></TableHead>
               <TableHead className="min-w-[180px]">Participant</TableHead>
               {events.map((event) => (
-                <TableHead key={event.id} className="text-center tabular-nums uppercase text-[10px] tracking-tighter">
-                  {event.label}
+                <TableHead key={event.id}>
+                  <Button
+                    size="sm" variant="outline" className="text-center uppercase text-xs tracking-tighter hover:cursor-pointer"
+                    onClick={() => router.push(`/results/${year}/${event.label}`)}
+                    disabled={!event.resultsAvailable}
+                  >
+                    {event.label}
+                  </Button>
                 </TableHead>
               ))}
               <TableHead className="text-right pr-6 font-bold">Total</TableHead>

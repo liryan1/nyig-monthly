@@ -5,27 +5,27 @@ import Link from "next/link";
 const iconSize = 20;
 export const socialIcons = [
   {
-    icon: "stripe.svg",
+    icon: "/stripe.svg",
     name: "Stripe",
     href: "https://donate.stripe.com/bJefZh04kfgmg5n729es002"
   },
   {
-    icon: "facebook.svg",
+    icon: "/facebook.svg",
     name: "Facebook",
     href: "https://www.facebook.com/mingnyig",
   },
   {
-    icon: "linkedin.svg",
+    icon: "/linkedin.svg",
     name: "LinkedIn",
     href: "https://www.linkedin.com/company/nyig",
   },
   {
-    icon: "youtube.svg",
+    icon: "/youtube.svg",
     name: "YouTube",
     href: "https://youtube.com/nyig_go",
   },
   {
-    icon: "x.svg",
+    icon: "/x.svg",
     name: "X (Twitter)",
     href: "https://x.com/nyig_go",
   },

@@ -4,24 +4,21 @@ import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert";
 import { AlertCircle } from "lucide-react";
 import { Suspense } from "react";
 import { LeaderboardSkeleton } from "./LeaderboardSkeleton";
+import { getFetchUrl } from "@/lib/utils";
 
 const CACHE_INTERVAL = 1;
 
-const getFetchUrl = (circuit: string) => {
-  const currentYear = process.env.YEAR;
-  const baseUrl = process.env.NEXT_PUBLIC_APP_URL;
-  if (!baseUrl) throw new Error("NEXT_PUBLIC_APP_URL is not defined");
-  if (!currentYear) throw new Error("YEAR is not defined");
-
-  const url = new URL("/api/leaderboard", baseUrl);
+const getUrl = (circuit: string) => {
+  const year = new Date().getFullYear();
+  const url = getFetchUrl("leaderboard")
   url.searchParams.set("circuit", circuit);
-  url.searchParams.set("year", currentYear);
+  url.searchParams.set("year", year.toString());
   return url.toString();
 }
 
 async function LeaderboardData({ circuit }: { circuit: string }) {
   try {
-    const res = await fetch(getFetchUrl(circuit), {
+    const res = await fetch(getUrl(circuit), {
       next: { revalidate: CACHE_INTERVAL },
     });
 

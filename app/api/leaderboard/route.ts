@@ -32,7 +32,8 @@ interface DivisionGroup {
 
 export async function GET(req: NextRequest) {
   const { searchParams } = new URL(req.url);
-  const year = parseInt(searchParams.get("year") || "2025");
+  const currentYear = new Date().getFullYear();
+  const year = parseInt(searchParams.get("year") || currentYear.toString());
   const circuit = (searchParams.get("circuit") || "youth") as keyof SeasonRules;
   const isYouth = circuit === "youth";
 
@@ -90,7 +91,7 @@ export async function GET(req: NextRequest) {
   })).filter((group) => group.participants.length > 0);
 
   return NextResponse.json({
-    events: season.events.map((e) => ({ id: e.id, label: e.label })),
+    events: season.events.map((e) => ({ id: e.id, label: e.label, resultsAvailable: !!e.results })),
     data,
   });
 }

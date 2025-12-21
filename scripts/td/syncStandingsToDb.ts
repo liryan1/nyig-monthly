@@ -36,10 +36,8 @@ export async function syncStandingsToDb(
   for (const player of results) {
     if (isDryRun) {
       console.log(`[DRY RUN] Participant: ${player.fullName} (AGA: ${player.agaId}), Score: ${player.score}`);
-      console.log(player)
       continue;
     }
-
 
     // 2. Upsert Participant
     const participant = await prisma.participant.upsert({

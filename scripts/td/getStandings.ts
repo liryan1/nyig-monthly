@@ -24,9 +24,10 @@ export function getUnifiedStandings(
     // 2. Map to unified format
     playersInDivision.forEach((player, index) => {
       const position = index + 1;
-      let points = PLACEMENT_POINTS[position] ?? 0;
-      if (!player.roundScores.every(score => score === "skip")) {
-        points = 1;
+      let points = PLACEMENT_POINTS[position] ?? 1;
+      // If the player skipped any round, they are not eligible for points
+      if (!player.roundScores.every(score => score !== "skip")) {
+        points = 0;
       }
 
       allResults.push({
@@ -57,7 +58,7 @@ export function getStandingsMarkdown(results: Record<string, UnifiedPlayerResult
 
   Object.entries(results).forEach(([division, players]) => {
     markdown += `### Division: ${division}\n\n`;
-    markdown += `| Pos | agaId | Name | Wins | SOS | SOSOS | Score |\n`;
+    markdown += `| Pos | AGA ID | Name | Wins | SOS | SOSOS | Points |\n`;
     markdown += `| :--- | :--- | :--- | :--- | :--- | :--- | :--- |\n`;
 
     players.forEach((p) => {
