@@ -1,7 +1,22 @@
 import { prisma } from "@/lib/prisma";
 
 const existingAgaIds = new Set()
-const year = 2025
+const year = 2026
+const eventLabels = ['jan', 'feb', 'mar', 'may', 'jun', 'jul', 'sep', 'oct', 'nov'];
+const rules = {
+  adult: [
+    { label: 'High Dan', min: 3, max: 8, isYouth: false },
+    { label: 'Dan', min: 0, max: 2, isYouth: false },
+    { label: 'Single-digit kyu', min: -9, max: -1, isYouth: false },
+    { label: 'Double-digit kyu', min: -30, max: -10, isYouth: false }
+  ],
+  youth: [
+    { label: 'Dan', min: 0, max: 8, isYouth: true },
+    { label: 'Single-digit kyu', min: -9, max: -1, isYouth: true },
+    { label: 'Double-digit kyu A', min: -17, max: -10, isYouth: true },
+    { label: 'Double-digit kyu B', min: -30, max: -18, isYouth: true }
+  ]
+}
 
 async function seed() {
   console.log('🌱 Starting seed...');
@@ -14,36 +29,40 @@ async function seed() {
   // await prisma.season.deleteMany();
 
   // Create Season with division rules
-  console.log('Creating season...');
-  const season = await prisma.season.create({
-    data: {
+  console.log('Upserting season...');
+  const season = await prisma.season.upsert({
+    where: {
       year,
-      rules: {
-        adult: [
-          { label: 'Double-digit kyu', min: -30, max: -10, isYouth: false },
-          { label: 'Single-digit kyu', min: -9, max: -1, isYouth: false },
-          { label: 'Dan', min: 0, max: 2, isYouth: false },
-          { label: 'High Dan', min: 3, max: 8, isYouth: false }
-        ],
-        youth: [
-          { label: 'Double-digit kyu A', min: -30, max: -18, isYouth: true },
-          { label: 'Double-digit kyu B', min: -17, max: -10, isYouth: true },
-          { label: 'Single-digit kyu', min: -9, max: -1, isYouth: true },
-          { label: 'Dan', min: 0, max: 8, isYouth: true }
-        ]
-      }
+    },
+    create: {
+      year,
+      rules,
+    },
+    update: {
+      rules,
     }
   });
 
   // Create Events
   console.log('Creating events...');
-  const eventLabels = ['jan', 'mar', 'apr', 'may', 'jun', 'jul', 'sep', 'oct', 'dec'];
-  await prisma.event.createMany({
-    data: eventLabels.map(label => ({
-      label,
-      seasonId: season.id
-    }))
-  });
+  const eventUpserts = eventLabels.map(label => {
+    return prisma.event.upsert({
+      where: {
+        label_seasonId: {
+          label,
+          seasonId: season.id,
+        }
+      },
+      create: {
+        label,
+        seasonId: season.id,
+      },
+      update: {
+        label,
+      }
+    })
+  })
+  await Promise.all(eventUpserts)
 
   async function generatePlayersAndScores() {
     function generateAgaId() {

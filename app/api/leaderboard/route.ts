@@ -3,7 +3,6 @@ import { prisma } from "@/lib/prisma";
 import { Participant } from "@prisma/client";
 import { getRankDisplay } from "@/lib/utils";
 
-// Structure of the JSON rules stored in the Season model
 interface DivisionRule {
   label: string;
   min: number;
@@ -15,7 +14,6 @@ interface SeasonRules {
   youth: DivisionRule[];
 }
 
-// Define the shape of our aggregated participant data
 interface AggregatedParticipant {
   id: string; // agaId
   name: string;
@@ -41,6 +39,7 @@ export async function GET(req: NextRequest) {
     where: { year },
     include: {
       events: {
+        orderBy: { createdAt: 'asc' },
         include: {
           scores: {
             include: { participant: true },
@@ -60,7 +59,11 @@ export async function GET(req: NextRequest) {
 
   const participantMap: Record<string, AggregatedParticipant> = {};
 
+  let latestEventId: string | undefined;
   season.events.forEach((event) => {
+    if (event.results) {
+      latestEventId = event.id
+    }
     event.scores.forEach((score) => {
       const p: Participant = score.participant;
       if (p.isYouth !== isYouth) return;
@@ -91,7 +94,12 @@ export async function GET(req: NextRequest) {
   })).filter((group) => group.participants.length > 0);
 
   return NextResponse.json({
-    events: season.events.map((e) => ({ id: e.id, label: e.label, resultsAvailable: !!e.results })),
+    events: season.events.map((e) => ({
+      id: e.id,
+      label: e.label,
+      resultsAvailable: !!e.results,
+      isLatest: e.id === latestEventId // Mark the latest event
+    })),
     data,
   });
 }

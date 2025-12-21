@@ -8,11 +8,13 @@ import { Badge } from "@/components/ui/badge";
 import { TrendingUp, TrendingDown, Minus, Trophy, ChevronDown, ChevronRight, Medal, Award } from "lucide-react";
 import { Button } from './ui/button';
 import { useRouter } from 'next/navigation';
+import { cn } from '@/lib/utils';
 
 type Event = {
   id: string;
   label: string;
   resultsAvailable?: boolean;
+  isLatest?: boolean;
 };
 
 type Participant = {
@@ -81,7 +83,13 @@ export default function GoLeaderboard({ events, data }: LeaderboardProps) {
               {events.map((event) => (
                 <TableHead key={event.id}>
                   <Button
-                    size="sm" variant="outline" className="text-center uppercase text-xs tracking-tighter hover:cursor-pointer"
+                    size="sm" variant="outline"
+                    className={
+                      cn(
+                        event.isLatest ? "font-bold text-blue-600 underline" : "",
+                        "text-center uppercase text-xs tracking-tighter hover:cursor-pointer"
+                      )
+                    }
                     onClick={() => router.push(`/results/${year}/${event.label}`)}
                     disabled={!event.resultsAvailable}
                   >

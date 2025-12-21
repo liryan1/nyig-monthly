@@ -1,6 +1,7 @@
 import LeaderboardPage from "@/components/LeaderboardPage";
 import { LogoWithText } from "@/components/Logo";
 import { Button } from "@/components/ui/button";
+import { ScaleIcon } from "lucide-react";
 import Link from "next/link";
 
 interface PageProps {
@@ -14,7 +15,15 @@ export default async function Home({ searchParams }: PageProps) {
   return (
     <div className="flex min-h-screen items-center justify-center">
       <main className="min-h-screen w-full max-w-6xl p-4 sm:p-16 pb-0 space-y-4 sm:space-y-12">
-        <LogoWithText h={36} text="Monthly Leaderboard" />
+        <div className="flex justify-between flex-col sm:flex-row items-center gap-2">
+          <LogoWithText h={36} text="Monthly Leaderboard" />
+          <Link href="/rules">
+            <Button variant="outline" size="sm">
+              Rules
+              <ScaleIcon />
+            </Button>
+          </Link>
+        </div>
         <LeaderboardPage circuit={circuit} />
         <div className="flex gap-4 justify-center">
           <Button>

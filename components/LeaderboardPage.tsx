@@ -6,7 +6,7 @@ import { Suspense } from "react";
 import { LeaderboardSkeleton } from "./LeaderboardSkeleton";
 import { getFetchUrl } from "@/lib/utils";
 
-const CACHE_INTERVAL = 3600;
+const CACHE_INTERVAL = 1;
 
 const getUrl = (circuit: string) => {
   const year = new Date().getFullYear();
@@ -44,7 +44,8 @@ async function LeaderboardData({ circuit }: { circuit: string }) {
 
 export default async function LeaderboardPage({ circuit }: { circuit: string }) {
   return (
-    <div className="container mx-auto space-y-4">
+    <div className="container mx-auto space-y-2">
+      <p className="text-muted-foreground">Click on the month to see tournament results.</p>
       <CategoryTabs />
 
       <Suspense key={circuit} fallback={<LeaderboardSkeleton />}>
