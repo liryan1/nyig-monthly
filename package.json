@@ -6,7 +6,8 @@
     "dev": "next dev --turbopack",
     "build": "next build",
     "start": "next start",
-    "lint": "eslint"
+    "lint": "eslint",
+    "preinstall": "prisma generate"
   },
   "dependencies": {
     "@prisma/client": "^6.19.0",
