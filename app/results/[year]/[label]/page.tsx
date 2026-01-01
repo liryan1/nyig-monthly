@@ -1,7 +1,6 @@
-import ReactMarkdown from "react-markdown";
-import remarkGfm from "remark-gfm";
-import { notFound } from "next/navigation";
+import { MarkdownRenderer } from "@/components/MarkdownRenderer";
 import { getFetchUrl } from "@/lib/utils";
+import { notFound } from "next/navigation";
 
 const CACHE_INTERVAL = parseInt(process.env.CACHE_INTERVAL_SECONDS ?? "3600");
 
@@ -35,9 +34,7 @@ export default async function ResultsPage({ params }: Params) {
   return (
     <div className="prose max-w-4xl mx-auto p-6">
       <h1 className="font-semibold">Monthly Series {year} - {label.toUpperCase()} Standings</h1>
-      <ReactMarkdown remarkPlugins={[remarkGfm]}>
-        {data.results}
-      </ReactMarkdown>
+      <MarkdownRenderer contents={data.results} />
     </div>
   );
 }

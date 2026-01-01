@@ -9,10 +9,17 @@ import { TrendingUp, TrendingDown, Minus, Trophy, ChevronDown, ChevronRight, Med
 import { Button } from './ui/button';
 import { useRouter } from 'next/navigation';
 import { cn } from '@/lib/utils';
+import {
+  Tooltip,
+  TooltipContent,
+  TooltipProvider,
+  TooltipTrigger,
+} from "@/components/ui/tooltip";
 
 type Event = {
   id: string;
   label: string;
+  date: string;
   resultsAvailable?: boolean;
   isLatest?: boolean;
 };
@@ -30,6 +37,7 @@ type DivisionGroup = {
 };
 
 interface LeaderboardProps {
+  year?: string;
   events: Event[];
   data: DivisionGroup[];
 }
@@ -66,9 +74,17 @@ const getRankIcon = (rank: number) => {
   return <span className="text-gray-500 font-semibold">{rank}</span>;
 };
 
+export const formatDate = (dateString: string) => {
+  return new Intl.DateTimeFormat("en-US", {
+    month: "short",
+    day: "numeric",
+    year: "numeric",
+    timeZone: "UTC", // Prevents shift to local user time
+  }).format(new Date(dateString));
+};
 
-export default function GoLeaderboard({ events, data }: LeaderboardProps) {
-  const year = new Date().getFullYear();
+
+export default function GoLeaderboard({ events, data, year }: LeaderboardProps) {
   const router = useRouter();
   const [collapsed, setCollapsed] = useState<Record<string, boolean>>({});
 
@@ -87,19 +103,31 @@ export default function GoLeaderboard({ events, data }: LeaderboardProps) {
               <TableHead className="min-w-[180px]">Participant</TableHead>
               {events.map((event) => (
                 <TableHead key={event.id}>
-                  <Button
-                    size="sm" variant="outline"
-                    className={
-                      cn(
-                        event.isLatest ? "font-bold text-blue-600 underline" : "",
-                        "text-center uppercase text-xs tracking-tighter hover:cursor-pointer"
-                      )
-                    }
-                    onClick={() => router.push(`/results/${year}/${event.label}`)}
-                    disabled={!event.resultsAvailable}
-                  >
-                    {event.label}
-                  </Button>
+                  <TooltipProvider>
+                    <Tooltip>
+                      <TooltipTrigger asChild>
+                        <span tabIndex={0} className="inline-block">
+                          <Button
+                            size="sm"
+                            variant="outline"
+                            disabled={!event.resultsAvailable}
+                            className={cn(
+                              event.isLatest ? "font-bold text-blue-600 underline" : "",
+                              "text-center uppercase text-xs tracking-tighter hover:cursor-pointer",
+                              // Ensure button doesn't block events meant for the wrapper
+                              !event.resultsAvailable && "pointer-events-none opacity-50"
+                            )}
+                            onClick={() => router.push(`/results/${year}/${event.label}`)}
+                          >
+                            {event.label}
+                          </Button>
+                        </span>
+                      </TooltipTrigger>
+                      <TooltipContent>
+                        <p>{formatDate(event.date)}</p>
+                      </TooltipContent>
+                    </Tooltip>
+                  </TooltipProvider>
                 </TableHead>
               ))}
               <TableHead className="text-right pr-6 font-bold">Total</TableHead>

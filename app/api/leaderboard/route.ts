@@ -39,7 +39,7 @@ export async function GET(req: NextRequest) {
     where: { year },
     include: {
       events: {
-        orderBy: { createdAt: 'asc' },
+        orderBy: { date: 'asc' },
         include: {
           scores: {
             include: { participant: true },
@@ -97,6 +97,7 @@ export async function GET(req: NextRequest) {
     events: season.events.map((e) => ({
       id: e.id,
       label: e.label,
+      date: e.date,
       resultsAvailable: !!e.results,
       isLatest: e.id === latestEventId // Mark the latest event
     })),

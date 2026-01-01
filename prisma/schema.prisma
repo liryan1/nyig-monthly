@@ -20,11 +20,12 @@ model Season {
 }
 
 model Event {
-  id       String  @id @default(auto()) @map("_id") @db.ObjectId
+  id       String   @id @default(auto()) @map("_id") @db.ObjectId
   label    String
+  date     DateTime
   results  String?
-  seasonId String  @db.ObjectId
-  season   Season  @relation(fields: [seasonId], references: [id])
+  seasonId String   @db.ObjectId
+  season   Season   @relation(fields: [seasonId], references: [id])
   scores   Score[]
 
   createdAt DateTime @default(now())

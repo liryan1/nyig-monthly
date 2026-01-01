@@ -8,24 +8,28 @@ import { getFetchUrl } from "@/lib/utils";
 
 const CACHE_INTERVAL = parseInt(process.env.CACHE_INTERVAL_SECONDS ?? "3600");
 
-const getUrl = (circuit: string) => {
-  const year = new Date().getFullYear();
+const getUrl = (circuit: string, year: string) => {
   const url = getFetchUrl("leaderboard")
   url.searchParams.set("circuit", circuit);
   url.searchParams.set("year", year.toString());
   return url.toString();
 }
 
-async function LeaderboardData({ circuit }: { circuit: string }) {
+interface LeaderboardProps {
+  circuit: string
+  year: string
+}
+
+async function LeaderboardData({ circuit, year }: LeaderboardProps) {
   try {
-    const res = await fetch(getUrl(circuit), {
+    const res = await fetch(getUrl(circuit, year), {
       next: { revalidate: CACHE_INTERVAL },
     });
 
     if (!res.ok) throw new Error("Failed to fetch leaderboard data");
 
     const { events, data } = await res.json();
-    return <CollapsibleLeaderboard events={events} data={data} />;
+    return <CollapsibleLeaderboard events={events} data={data} year={year} />;
   } catch (error) {
     return (
       <Alert variant="destructive" className="max-w-2xl mx-auto my-8">
@@ -42,14 +46,14 @@ async function LeaderboardData({ circuit }: { circuit: string }) {
   }
 }
 
-export default async function LeaderboardPage({ circuit }: { circuit: string }) {
+export default async function LeaderboardPage(props: LeaderboardProps) {
   return (
     <div className="container mx-auto space-y-2">
       <p className="text-muted-foreground">Click on the month to see tournament results.</p>
       <CategoryTabs />
 
-      <Suspense key={circuit} fallback={<LeaderboardSkeleton />}>
-        <LeaderboardData circuit={circuit} />
+      <Suspense fallback={<LeaderboardSkeleton />}>
+        <LeaderboardData {...props} />
       </Suspense>
     </div>
   );
