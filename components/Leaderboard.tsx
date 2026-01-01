@@ -75,12 +75,17 @@ const getRankIcon = (rank: number) => {
 };
 
 export const formatDate = (dateString: string) => {
-  return new Intl.DateTimeFormat("en-US", {
-    month: "short",
-    day: "numeric",
-    year: "numeric",
-    timeZone: "UTC", // Prevents shift to local user time
-  }).format(new Date(dateString));
+  try {
+    return new Intl.DateTimeFormat("en-US", {
+      month: "short",
+      day: "numeric",
+      year: "numeric",
+      timeZone: "UTC", // Prevents shift to local user time
+    }).format(new Date(dateString));
+  } catch (error) {
+    console.log("Failed to parse date string:", error);
+    return ""
+  }
 };
 
 
