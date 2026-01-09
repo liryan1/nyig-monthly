@@ -20,8 +20,8 @@ Events typically take place on the first Saturday of each month.
 |                            | Date(s)                                                          |
 | -------------------------- | ---------------------------------------------------------------- |
 | **Monthly Tournaments**    | Jan 10, Feb 7, Mar 7, May 2, Jun 6, Jul 11, Sep 12, Oct 3, Nov 7 |
-| **NY State Championships** | April 11                                                         |
-| **US Go Congress**         | August 1–8                                                       |
+| **NY State Championships** | April 11-12                                                      |
+| **US Go Congress**         | July 25 - August 1                                               |
 | **Grand Finals**           | December 12                                                      |
 
 ## 3. Tournament Format & Rules
