@@ -42,8 +42,8 @@ async function writeScoresSync({ results, eventLabel, year, isProd, isYouth }: {
   }
 }
 
-const eventLabel = "dec";
-const year = 2025;
+const eventLabel = "jan";
+const year = 2026;
 const isProd = true
 
 // Write standings to DB and to a results markdown file

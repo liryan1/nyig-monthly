@@ -10,7 +10,7 @@ Players must choose one circuit for the entire season. Youth players may opt int
 
 | Circuit   | Eligibility           | Divisions                                                                     |
 | --------- | --------------------- | ----------------------------------------------------------------------------- |
-| **Youth** | U18 as of Jan 1, 2026 | **Dan** (1D+), **SDK** (9k-1k), **DDK A** (17k-10k), **DDK B** (beginner-18k) |
+| **Youth** | U18 as of Jan 1, 2026 | **Dan** (1D+), **SDK** (9k-1k), **DDK A** (16k-10k), **DDK B** (beginner-17k) |
 | **Adult** | 18+ as of Jan 1, 2026 | **Open** (4D+), **Dan** (1D-3D), **SDK** (9k-1k), **DDK** (beginner-10k)      |
 
 ## 2. Schedule & Key Dates
