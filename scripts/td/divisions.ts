@@ -12,7 +12,7 @@ export const youth = [
   {
     "label": "Single-digit kyu",
     "min": -9.999999,
-    "max": -1,
+    "max": -0.000001,
   },
   {
     "label": "Dan",
@@ -30,16 +30,16 @@ export const adult = [
   {
     "label": "Single-digit kyu",
     "min": -9.999999,
-    "max": -1,
+    "max": -0.000001,
   },
   {
     "label": "Dan",
     "min": 0,
-    "max": 3.9999999,
+    "max": 2.9999999,
   },
   {
     "label": "High Dan",
-    "min": 4,
+    "min": 3,
     "max": 8,
   }
 ]

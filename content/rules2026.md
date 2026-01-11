@@ -76,7 +76,7 @@ The top 4 players from each division (Adult and Youth) qualify for the Grand Fin
 
 - **Time Control:** 30 min + byo-yomi.
 
-- **Prizes:** Adult/Youth top division champions receive $500+; other divisions receive scaled cash or trophies.
+- **Prizes:** Adult/Youth top division champions receive $800+; other divisions receive scaled cash or trophies.
 
 ## 6. Conduct & Fair Play
 
