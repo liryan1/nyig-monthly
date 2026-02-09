@@ -45,7 +45,12 @@ async function seed() {
 
   // Create Events
   console.log('Creating events...');
-  const eventUpserts = eventLabels.map(label => {
+  const eventUpserts = eventLabels.map((label, index) => {
+    // Generate a dummy date for the event. Assuming first day of the month.
+    // Months are 1-indexed for Date objects, so index + 1
+    const month = index + 1;
+    const date = new Date(Date.UTC(year, month - 1, 1)).toISOString(); // Use UTC to avoid timezone issues
+
     return prisma.event.upsert({
       where: {
         label_seasonId: {
@@ -56,9 +61,11 @@ async function seed() {
       create: {
         label,
         seasonId: season.id,
+        date, // Add the date property here
       },
       update: {
         label,
+        date, // Also update the date in case the event already exists
       }
     })
   })

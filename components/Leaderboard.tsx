@@ -53,21 +53,58 @@ const getParticipantTotal = (p: Participant) =>
     .reduce((acc, score) => acc + score, 0);
 
 // This is always safe
-const getTrend = (p: Participant, events: Event[]) => {
+const getTrend = (
+  currentParticipant: Participant,
+  allParticipantsInDivision: Participant[],
+  events: Event[]
+) => {
   try {
-    const lastestIndex = events.findIndex(e => e.isLatest)
-    const latestEventId = events[lastestIndex].id;
-    const prevEventId = events[lastestIndex - 1].id;
+    const latestEventIndex = events.findIndex((e) => e.isLatest);
+    if (latestEventIndex <= 0) return "neutral"; // Need at least two events to compare trend
 
-    const latestScore = p.scores[latestEventId] ?? 0;
-    const prevScore = p.scores[prevEventId] ?? 0;
+    const eventsUpToPrevious = events.slice(0, latestEventIndex); // Excludes the latest event
 
-    if (latestScore > prevScore) return "up";
-    if (latestScore < prevScore) return "down";
-  } catch {
+    // Calculate total score considering only events up to a certain point
+    const calculateTotalForEventSubset = (p: Participant, eventSubset: Event[]) => {
+      // Filter p.scores to only include scores from the eventSubset
+      const relevantScores = Object.entries(p.scores)
+        .filter(([eventId]) => eventSubset.some(e => e.id === eventId))
+        .map(([, score]) => score);
+
+      // Apply the top 5 logic from getParticipantTotal
+      return relevantScores
+        .filter((score): score is number => score !== undefined)
+        .sort((a, b) => b - a)
+        .slice(0, 5)
+        .reduce((acc, score) => acc + score, 0);
+    };
+
+    // Determine current rank (since allParticipantsInDivision is already sorted by current standings)
+    const currentRank = allParticipantsInDivision.findIndex(p => p.id === currentParticipant.id);
+
+    // Calculate previous standings by re-sorting based on scores up to the previous event
+    const previousStandingsSorted = [...allParticipantsInDivision].sort((a, b) => {
+      const totalA = calculateTotalForEventSubset(a, eventsUpToPrevious);
+      const totalB = calculateTotalForEventSubset(b, eventsUpToPrevious);
+      return totalB - totalA;
+    });
+
+    const previousRank = previousStandingsSorted.findIndex(p => p.id === currentParticipant.id);
+
+    // Handle new participants (who were not ranked previously)
+    if (previousRank === -1 && currentRank !== -1) return "up";
+    // If the participant isn't in current standings (shouldn't happen with current logic), or if both are -1
+    if (currentRank === -1 || previousRank === -1) return "neutral"; // Simplified: if either is missing, no clear trend
+
+    // Compare ranks (lower index means better rank)
+    if (currentRank < previousRank) return "up";
+    if (currentRank > previousRank) return "down";
+    
+    return "neutral";
+  } catch (error) {
+    console.error("Error calculating trend:", error);
     return "neutral";
   }
-  return "neutral";
 };
 
 const getRankIcon = (rank: number) => {
@@ -174,7 +211,7 @@ export default function GoLeaderboard({ events, data, year }: LeaderboardProps) 
                   </TableRow>
 
                   {!isCollapsed && sortedParticipants.map((player, idx) => {
-                    const trend = getTrend(player, events);
+                    const trend = getTrend(player, sortedParticipants, events);
                     const rank = idx + 1;
                     const rankIcon = getRankIcon(rank);
 
