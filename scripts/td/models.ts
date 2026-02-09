@@ -11,6 +11,7 @@ export interface PlayerData {
   givenName: string;
   familyName: string;
   rating: number;
+  rankId: number;
   wins: number;
   sumOfOpponentScores: number;
   sumOfSumOfOpponentScores: number;

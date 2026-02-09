@@ -52,17 +52,21 @@ const getParticipantTotal = (p: Participant) =>
     .slice(0, 5)
     .reduce((acc, score) => acc + score, 0);
 
+// This is always safe
 const getTrend = (p: Participant, events: Event[]) => {
-  if (events.length < 2) return "neutral";
+  try {
+    const lastestIndex = events.findIndex(e => e.isLatest)
+    const latestEventId = events[lastestIndex].id;
+    const prevEventId = events[lastestIndex - 1].id;
 
-  const latestEventId = events[events.length - 1].id;
-  const prevEventId = events[events.length - 2].id;
+    const latestScore = p.scores[latestEventId] ?? 0;
+    const prevScore = p.scores[prevEventId] ?? 0;
 
-  const latestScore = p.scores[latestEventId] ?? 0;
-  const prevScore = p.scores[prevEventId] ?? 0;
-
-  if (latestScore > prevScore) return "up";
-  if (latestScore < prevScore) return "down";
+    if (latestScore > prevScore) return "up";
+    if (latestScore < prevScore) return "down";
+  } catch {
+    return "neutral";
+  }
   return "neutral";
 };
 

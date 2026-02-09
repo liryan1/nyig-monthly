@@ -2,6 +2,13 @@ import { getRankDisplay } from "@/lib/utils";
 import { Division, PLACEMENT_POINTS, PlayerData, UnifiedPlayerResult } from "./models";
 import { playerSortLogic } from "./sortPlayers";
 
+// Helper function to convert AGA rank ID to the internal rank integer (kyu are negative, dan are positive)
+function convertAgaRankToRankInt(agaRankId: number): number {
+  // Assuming the pattern agaRankId - 30 gives the correct rankInt
+  // For example: 34 (5d) -> 4; 30 (1d) -> 0; 29 (1k) -> -1; 17 (13k) -> -13
+  return agaRankId - 30;
+}
+
 /**
  * Organizes players into divisions with full tie-breaking logic in `sortPlayers`
  */
@@ -18,7 +25,10 @@ export function getUnifiedStandings(
   divisions.forEach((division) => {
     // 1. Group and Sort
     const playersInDivision = players
-      .filter((p) => p.rating >= division.min && p.rating <= division.max)
+      .filter((p) => {
+        const playerRankInt = convertAgaRankToRankInt(p.rankId); // Use rankId and the new converter
+        return playerRankInt >= division.min && playerRankInt <= division.max;
+      })
       .sort(playerSortLogic);
 
     // 2. Map to unified format
@@ -34,7 +44,7 @@ export function getUnifiedStandings(
         position,
         fullName: `${player.givenName} ${player.familyName}`,
         wins: player.wins,
-        rankInt: player.rating > 0 ? Math.floor(player.rating) - 1 : Math.ceil(player.rating),
+        rankInt: convertAgaRankToRankInt(player.rankId), // Use rankId and the new converter
         sos: player.sumOfOpponentScores,
         sosos: player.sumOfSumOfOpponentScores,
         score: points,

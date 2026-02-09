@@ -42,7 +42,7 @@ async function writeScoresSync({ results, eventLabel, year, isProd, isYouth }: {
   }
 }
 
-const eventLabel = "jan";
+const eventLabel = "feb";
 const year = 2026;
 const isProd = true
 
