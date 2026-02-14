@@ -1,11 +1,11 @@
+import { getStandingsMarkdown, getUnifiedStandings } from "@/lib/td/getStandings";
+import { UnifiedPlayerResult } from '@/lib/td/models';
 import * as fs from 'fs';
-import { youth, adult } from "./divisions";
-import { getStandingsMarkdown, getUnifiedStandings } from "./getStandings";
-import { results_youth } from "./results_youth";
+import { adult, youth } from "./divisions";
 import { results_adult } from "./results_adult";
-import { syncStandingsToDb } from './syncStandingsToDb';
-import { UnifiedPlayerResult } from './models';
+import { results_youth } from "./results_youth";
 import { syncResultsToDb } from './syncResultsToDb';
+import { syncStandingsToDb } from './syncStandingsToDb';
 
 const youth_standings = getUnifiedStandings(youth, results_youth)
 const youth_markdown = getStandingsMarkdown(youth_standings)
@@ -14,7 +14,7 @@ const adult_standings = getUnifiedStandings(adult, results_adult)
 const adult_markdown = getStandingsMarkdown(adult_standings)
 const content = `## Youth Standings\n\n${youth_markdown}\n## Adult Standings\n\n${adult_markdown}`
 
-const filePath = 'results.md';
+const filePath = 'scripts/results.md';
 function writeResults({ eventLabel, year, results }: { eventLabel: string, year: number, results: string }) {
   try {
     syncResultsToDb({ eventLabel, year, results })

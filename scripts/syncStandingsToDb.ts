@@ -1,5 +1,5 @@
 import { prisma } from "@/lib/prisma";
-import { UnifiedPlayerResult } from "./models";
+import { UnifiedPlayerResult } from "@/lib/td/models";
 
 interface SyncOptions {
   eventLabel: string;

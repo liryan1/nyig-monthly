@@ -22,11 +22,11 @@ async function seed() {
   console.log('🌱 Starting seed...');
 
   // DANGER: Clear existing data
-  // console.log('Clearing existing data...');
-  // await prisma.score.deleteMany();
-  // await prisma.event.deleteMany();
-  // await prisma.participant.deleteMany();
-  // await prisma.season.deleteMany();
+  console.log('Clearing existing data...');
+  await prisma.score.deleteMany();
+  await prisma.event.deleteMany();
+  await prisma.participant.deleteMany();
+  await prisma.season.deleteMany();
 
   // Create Season with division rules
   console.log('Upserting season...');

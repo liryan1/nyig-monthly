@@ -10,8 +10,7 @@ generator client {
 model Season {
   id     String  @id @default(auto()) @map("_id") @db.ObjectId
   year   Int     @unique
-  // Stores the division rules: 
-  // Array of { label: string, min: number, max: number, isYouth: boolean }
+  // Stores the division rules: see Rules type in @/lib/td/models.ts
   rules  Json
   events Event[]
 

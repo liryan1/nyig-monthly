@@ -1,7 +1,9 @@
+import Footer from "@/components/Footer";
+import ReduxProvider from "@/components/providers/ReduxProvider";
 import type { Metadata } from "next";
 import { Poppins } from "next/font/google";
+import { Toaster } from 'sonner';
 import "./globals.css";
-import Footer from "@/components/Footer";
 
 const font = Poppins({
   subsets: ["latin"], weight: ["200", "400", "500", "600", "800"],
@@ -28,8 +30,11 @@ export default function RootLayout({
       <body
         className={`${font.className} antialiased`}
       >
-        {children}
-        <Footer />
+        <ReduxProvider>
+          {children}
+          <Footer />
+        </ReduxProvider>
+        <Toaster position="top-center" />
       </body>
     </html>
   );

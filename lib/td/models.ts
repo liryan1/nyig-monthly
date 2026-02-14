@@ -1,3 +1,4 @@
+export type Rules = Record<"youth" | "adult", Division[]>
 
 export interface Division {
   label: string;
