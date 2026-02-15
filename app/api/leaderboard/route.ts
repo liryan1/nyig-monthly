@@ -99,7 +99,7 @@ export async function GET(req: NextRequest) {
       label: e.label,
       date: e.date,
       resultsAvailable: !!e.results,
-      isLatest: e.id === latestEventId // Mark the latest event
+      isLatest: e.id === latestEventId && currentYear === year // Mark the latest event
     })),
     data,
   });

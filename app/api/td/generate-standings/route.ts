@@ -6,10 +6,10 @@ import { NextResponse } from 'next/server';
 // 10-character alphanumeric tournament ID
 const LEAGO_TOURNAMENT_ID_REGEX = /[a-zA-Z0-9]{10}/;
 const LEAGO_URL_FORMAT = "https://api.leago.gg/api/v1/tournaments/TOURNAMENT_ID/standings"
-const year = new Date().getFullYear();
 
 export async function POST(req: Request) {
   try {
+    const year = 2025 // new Date().getFullYear();
     const { youthUrl: youthLeagoUrl, adultUrl: adultLeagoUrl } = await req.json();
 
     const season = await prisma.season.findUniqueOrThrow({ where: { year } });

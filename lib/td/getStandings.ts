@@ -32,12 +32,17 @@ export function getUnifiedStandings(
       .sort(playerSortLogic);
 
     // 2. Map to unified format
+
+    // tracks offset for players that did not receive points due to skipped rounds
+    // the points are still allocated to the next player down
+    let offset = 0
     playersInDivision.forEach((player, index) => {
       const position = index + 1;
-      let points = PLACEMENT_POINTS[position] ?? 1;
+      let points = PLACEMENT_POINTS[position + offset] ?? 1;
       // If the player skipped any round, they are not eligible for points
       if (!player.roundScores.every(score => score !== "skip")) {
         points = 0;
+        offset--;
       }
 
       allResults.push({

@@ -3,7 +3,7 @@ import { NextResponse } from "next/server";
 
 export async function GET() {
   try {
-    const currentYear = new Date().getFullYear();
+    const currentYear = 2025 // new Date().getFullYear();
 
     const season = await prisma.season.findUnique({ where: { year: currentYear }, select: { id: true } });
     if (!season) throw Error("Failed to read season")

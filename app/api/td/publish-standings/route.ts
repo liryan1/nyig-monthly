@@ -52,7 +52,6 @@ async function upsertPlayerAndScore({ pd, eventId, isYouth }: { pd: PlayerData, 
     throw Error("Invalid rank")
   }
 
-  // Upsert Participant
   const participant = await prisma.participant.upsert({
     where: { agaId: pd.agaId },
     update: {
@@ -66,7 +65,6 @@ async function upsertPlayerAndScore({ pd, eventId, isYouth }: { pd: PlayerData, 
     }
   });
 
-  // Create or Update Score
   await prisma.score.upsert({
     where: {
       agaId_eventId: {

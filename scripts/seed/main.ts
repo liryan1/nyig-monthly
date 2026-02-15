@@ -1,7 +1,7 @@
 import { getStandingsMarkdown, getUnifiedStandings } from "@/lib/td/getStandings";
 import { UnifiedPlayerResult } from '@/lib/td/models';
 import * as fs from 'fs';
-import { adult, youth } from "./divisions";
+import { adult, youth } from "../divisions";
 import { results_adult } from "./results_adult";
 import { results_youth } from "./results_youth";
 import { syncResultsToDb } from './syncResultsToDb';
