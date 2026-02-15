@@ -2,13 +2,18 @@
 
 Leaderboard for the New York Institute of Go Monthly Tournaments.
 
+## Tournament Director
+
+TDs should go to the `/td` page to submit results. Logic is based on leago.gg format and calls leago APIs to fetch tournament results.
+
 ## Scripts
 
-Prod database is being modified if changing `.env`.
+Prod database is being modified if changing `.env`. WARNING: After making manual fixes in prod, CHANGE BACK `.env`.
 
-`scripts/seed.py` - Script to seed initial data. Change `year` to create Season and Events.
+### Revert Publish
 
-`scripts/td/main.ts` - Create a markdown file of the results. Verify in development mode first.
+Removes the published event.results and removes all scores associated with the event. This essentially undos the `/td` publish workflow.
 
-1. Copy and paste network tab standings in Leaggo into `results_youth.ts` and `results_adult.ts`
-2. Run `npx tsx scripts/td/main.ts` to upload rank and upload results to results/{year}/{label}. Calculates and uploads scores to the database.
+```sh
+npm run script:revert-publish mar 2026
+```
